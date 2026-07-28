@@ -1,0 +1,123 @@
+name: Deploy portfolio to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  SOURCE_SITE: https://pavel-pushkin-portfolio-2026.pubblegunn.chatgpt.site
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare static portfolio
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p public
+          while IFS= read -r path; do
+            mkdir -p "public/$(dirname "$path")"
+            curl --fail --location --retry 4 --retry-delay 2 \
+              "$SOURCE_SITE/$path" --output "public/$path"
+          done <<'FILES'
+          index.html
+          apple-touch-icon.png
+          favicon.png
+          favicon.svg
+          file.svg
+          globe.svg
+          og.png
+          window.svg
+          assets/Portfolio-scdaAlQ_.js
+          assets/framework-CXnKph_e.js
+          assets/index-CMtSrleG.css
+          assets/index-DoijU9Xz.js
+          assets/layout-segment-context-CmFp3be5.js
+          assets/rolldown-runtime-S-ySWqyJ.js
+          assets/_vinext_fonts/dm-sans-90624ee039aa/dm-sans-151a53ae.woff2
+          assets/_vinext_fonts/dm-sans-90624ee039aa/dm-sans-f6298972.woff2
+          assets/_vinext_fonts/inter-9df0d028785c/inter-1ab1ad55.woff2
+          assets/_vinext_fonts/inter-9df0d028785c/inter-656bbed6.woff2
+          assets/_vinext_fonts/inter-9df0d028785c/inter-6e1a6b2b.woff2
+          assets/_vinext_fonts/inter-9df0d028785c/inter-7249155f.woff2
+          assets/_vinext_fonts/inter-9df0d028785c/inter-749a3084.woff2
+          assets/_vinext_fonts/inter-9df0d028785c/inter-e34c5f1b.woff2
+          assets/_vinext_fonts/inter-9df0d028785c/inter-fc83e075.woff2
+          images/anipura-landing-1820.webp
+          images/anipura-landing-960.webp
+          images/appexbots-dashboard-1820.webp
+          images/appexbots-dashboard-960.webp
+          images/appexbots-landing-1820.webp
+          images/appexbots-landing-960.webp
+          images/conomica-dashboard-1820.webp
+          images/conomica-dashboard-960.webp
+          images/flypix-dashboard-1820.webp
+          images/flypix-dashboard-960.webp
+          images/flypix-landing-1820.webp
+          images/flypix-landing-960.webp
+          images/fuelplus-dashboard-1820.webp
+          images/fuelplus-dashboard-960.webp
+          images/hero-silhouette-1280.webp
+          images/hero-silhouette-1920.webp
+          images/inlendo-dashboard-1820.webp
+          images/inlendo-dashboard-960.webp
+          images/pavel-photo-320.webp
+          images/pavel-photo-574.webp
+          images/toplivo-landing-1820.webp
+          images/toplivo-landing-960.webp
+          logos/claude.png
+          logos/codex.png
+          logos/figjam.png
+          logos/figma.png
+          logos/ga4.png
+          logos/gpt-image.png
+          logos/hotjar.png
+          logos/maze.png
+          logos/midjourney.png
+          logos/notion.png
+          logos/shopify.png
+          logos/webflow.png
+          FILES
+          cp public/index.html public/404.html
+          touch public/.nojekyll
+          python - <<'PY'
+          from pathlib import Path
+          for filename in ("index.html", "404.html"):
+              path = Path("public") / filename
+              html = path.read_text(encoding="utf-8")
+              html = html.replace(
+                  "https://pavel-pushkin-portfolio-2026.pubblegunn.chatgpt.site/",
+                  "https://pubblegun.github.io/",
+              )
+              html = html.replace(
+                  "https://pavelpushkin.design/",
+                  "https://pubblegun.github.io/",
+              )
+              path.write_text(html, encoding="utf-8")
+          PY
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
