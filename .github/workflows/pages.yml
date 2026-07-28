@@ -29,12 +29,13 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p public
+          curl --fail --location --retry 4 --retry-delay 2 \
+            "$SOURCE_SITE/" --output public/index.html
           while IFS= read -r path; do
             mkdir -p "public/$(dirname "$path")"
             curl --fail --location --retry 4 --retry-delay 2 \
               "$SOURCE_SITE/$path" --output "public/$path"
           done <<'FILES'
-          index.html
           apple-touch-icon.png
           favicon.png
           favicon.svg
