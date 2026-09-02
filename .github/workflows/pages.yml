@@ -77,8 +77,8 @@ jobs:
             fetch_asset "images/beyond/$i.webp"
           done
 
-          # wget does not retain every JavaScript module used for hydration.
-          # Discover module URLs from HTML and recursively fetch relative chunks.
+          # wget does not retain JavaScript module scripts reliably.
+          # Fetch every hashed JS/CSS asset referenced by the rendered HTML.
           python - <<'PY'
           import os
           import re
@@ -88,26 +88,15 @@ jobs:
           public = Path("public")
           source = os.environ["SOURCE_SITE"].rstrip("/")
           html = (public / "index.html").read_text(encoding="utf-8")
-          asset_pattern = re.compile(r"(?:https?://[^/]+/|/)?(assets/[A-Za-z0-9._~-]+\.(?:js|css))")
-          relative_pattern = re.compile(r"[\"'](?:\./)?([A-Za-z0-9._~-]+\.(?:js|css))[\"']")
+          pattern = re.compile(r"(?:https?://[^/]+/|/)?(assets/[A-Za-z0-9._~-]+\.(?:js|css))")
+          assets = list(dict.fromkeys(pattern.findall(html)))
 
-          queue = list(dict.fromkeys(asset_pattern.findall(html)))
-          seen = set()
-
-          while queue:
-              asset = queue.pop(0)
-              if asset in seen:
-                  continue
-              seen.add(asset)
+          for asset in assets:
               target = public / asset
               target.parent.mkdir(parents=True, exist_ok=True)
               if not target.exists():
                   with urlopen(f"{source}/{asset}") as response:
                       target.write_bytes(response.read())
-
-              text = target.read_text(encoding="utf-8", errors="ignore")
-              queue.extend(asset_pattern.findall(text))
-              queue.extend(f"assets/{name}" for name in relative_pattern.findall(text))
 
           if not any((public / "assets").glob("index-*.js")):
               raise SystemExit("Missing hydration entry module")
