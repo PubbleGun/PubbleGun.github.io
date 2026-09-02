@@ -78,29 +78,18 @@ jobs:
           done
 
           # wget does not retain JavaScript module scripts reliably.
-          # Fetch every hashed JS/CSS asset referenced by the rendered HTML.
-          python - <<'PY'
-          import os
-          import re
-          from pathlib import Path
-          from urllib.request import urlopen
+          # Extract every hashed JS/CSS URL from HTML and fetch it with curl.
+          while IFS= read -r asset
+          do
+            fetch_asset "$asset"
+          done < <(
+            grep -oE '(https?://[^/" ]+/)?/?assets/[A-Za-z0-9._~-]+\.(js|css)' public/index.html |
+              sed -E 's#https?://[^/]+/##; s#^/##' |
+              sort -u
+          )
 
-          public = Path("public")
-          source = os.environ["SOURCE_SITE"].rstrip("/")
-          html = (public / "index.html").read_text(encoding="utf-8")
-          pattern = re.compile(r"(?:https?://[^/]+/|/)?(assets/[A-Za-z0-9._~-]+\.(?:js|css))")
-          assets = list(dict.fromkeys(pattern.findall(html)))
-
-          for asset in assets:
-              target = public / asset
-              target.parent.mkdir(parents=True, exist_ok=True)
-              if not target.exists():
-                  with urlopen(f"{source}/{asset}") as response:
-                      target.write_bytes(response.read())
-
-          if not any((public / "assets").glob("index-*.js")):
-              raise SystemExit("Missing hydration entry module")
-          PY
+          find public/assets -maxdepth 1 -type f -name 'index-*.js' -print -quit |
+            grep -q .
 
           test -f public/index.html
           test -f public/images/hero-silhouette-1280.webp
