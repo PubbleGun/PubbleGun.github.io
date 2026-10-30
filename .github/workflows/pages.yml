@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Olivaw source revision: 814aeeccddfb49c68cfe48fb167d55df165df8a9
+  # Olivaw source revision: 0ae4f115f1046d48a76afb9d40b00196ed69b65a
   SOURCE_SITE: https://pavel-pushkin-portfolio-2026.pubblegunn.chatgpt.site
   OLIVAW_SITE: https://olivaw.pubblegunn.chatgpt.site
 
