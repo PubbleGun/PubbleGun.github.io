@@ -16,6 +16,7 @@ concurrency:
 
 env:
   SOURCE_SITE: https://pavel-pushkin-portfolio-2026.pubblegunn.chatgpt.site
+  OLIVAW_SITE: https://olivaw.pubblegunn.chatgpt.site
 
 jobs:
   deploy:
@@ -117,6 +118,48 @@ jobs:
                   html = html.replace(source, target)
               path.write_text(html, encoding="utf-8")
           PY
+
+          # Mirror the standalone Olivaw case study under /olivaw/.
+          mkdir -p public/olivaw
+          wget \
+            --page-requisites \
+            --convert-links \
+            --adjust-extension \
+            --no-host-directories \
+            --directory-prefix=public/olivaw \
+            "$OLIVAW_SITE/"
+
+          fetch_olivaw_asset() {
+            local asset="$1"
+            mkdir -p "public/olivaw/$(dirname "$asset")"
+            curl --fail --silent --show-error --location \
+              "$OLIVAW_SITE/$asset" \
+              --output "public/olivaw/$asset"
+          }
+
+          # Source elements and preload hints are not always mirrored by wget.
+          for asset in \
+            assets/gantari-normal.woff2 \
+            assets/gantari-italic.woff2 \
+            assets/hero-bg.webp \
+            assets/hero-object.webp \
+            assets/primary-bg.webp \
+            assets/logo-card-texture.webp \
+            assets/alt-bg.webp \
+            assets/badge.webp \
+            assets/exhibition.webp \
+            assets/sticker-bg.webp \
+            assets/robot.webp
+          do
+            fetch_olivaw_asset "$asset"
+          done
+
+          test -f public/olivaw/index.html
+          test -f public/olivaw/styles.css
+          test -f public/olivaw/script.js
+          test -f public/olivaw/assets/hero-bg.webp
+          test -f public/olivaw/assets/exhibition.webp
+          cp public/olivaw/index.html public/olivaw/404.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
