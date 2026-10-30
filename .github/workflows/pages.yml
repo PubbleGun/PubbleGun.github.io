@@ -144,8 +144,20 @@ jobs:
             assets/hero-bg.webp \
             assets/hero-object.webp \
             assets/primary-bg.webp \
-            assets/logo-card-texture.webp \
+            assets/primary-lockup.svg \
+            assets/logo-card-texture-exact.png \
+            assets/card-symbol-light-exact.svg \
+            assets/card-mini-light-exact.svg \
+            assets/card-word-light-exact.svg \
+            assets/card-symbol-blue-exact.svg \
+            assets/card-mini-blue-exact.svg \
+            assets/card-word-blue-exact.svg \
+            assets/card-symbol-dark-exact.svg \
+            assets/card-mini-dark-exact.svg \
+            assets/card-word-dark-exact.svg \
             assets/alt-bg.webp \
+            assets/alternative-lockup.svg \
+            assets/type-a-composition.svg \
             assets/badge.webp \
             assets/exhibition.webp \
             assets/sticker-bg.webp \
@@ -159,6 +171,9 @@ jobs:
           test -f public/olivaw/script.js
           test -f public/olivaw/assets/hero-bg.webp
           test -f public/olivaw/assets/exhibition.webp
+          test -f public/olivaw/assets/primary-lockup.svg
+          test -f public/olivaw/assets/alternative-lockup.svg
+          test -f public/olivaw/assets/type-a-composition.svg
           cp public/olivaw/index.html public/olivaw/404.html
 
       - name: Configure Pages
