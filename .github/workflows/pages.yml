@@ -18,6 +18,7 @@ env:
   # Olivaw source revision: 0ae4f115f1046d48a76afb9d40b00196ed69b65a
   SOURCE_SITE: https://pavel-pushkin-portfolio-2026.pubblegunn.chatgpt.site
   OLIVAW_SITE: https://olivaw.pubblegunn.chatgpt.site
+  OLIVAW_LANDING_SITE: https://olivaw-landing.pubblegunn.chatgpt.site
 
 jobs:
   deploy:
@@ -176,6 +177,66 @@ jobs:
           test -f public/olivaw/assets/alternative-lockup.svg
           test -f public/olivaw/assets/type-a-composition.svg
           cp public/olivaw/index.html public/olivaw/404.html
+
+
+          # Mirror the standalone Olivaw landing page under /olivaw_landing/.
+          mkdir -p public/olivaw_landing
+          wget \
+            --page-requisites \
+            --convert-links \
+            --adjust-extension \
+            --no-host-directories \
+            --directory-prefix=public/olivaw_landing \
+            "$OLIVAW_LANDING_SITE/"
+
+          fetch_olivaw_landing_asset() {
+            local asset="$1"
+            mkdir -p "public/olivaw_landing/$(dirname "$asset")"
+            curl --fail --silent --show-error --location \
+              "$OLIVAW_LANDING_SITE/$asset" \
+              --output "public/olivaw_landing/$asset"
+          }
+
+          for asset in \
+            styles.css \
+            script.js \
+            assets/gantari-normal.woff2 \
+            assets/gantari-italic.woff2 \
+            assets/hero-hands.webp \
+            assets/hero-dashboard.webp \
+            assets/capability-connect.webp \
+            assets/capability-control.webp \
+            assets/capability-upskill.webp \
+            assets/glass-form.webp \
+            assets/integrations-lobby.webp \
+            assets/product-ui.webp \
+            assets/scan-robot.webp \
+            assets/field-phone.webp \
+            assets/final-cta.webp \
+            assets/olivaw-wordmark.svg \
+            assets/chevron.svg \
+            assets/arrow-white.svg \
+            assets/arrow-dark.svg \
+            assets/icon-robots.svg \
+            assets/icon-building.svg \
+            assets/icon-tasks.svg \
+            assets/icon-ai.svg \
+            assets/status-dot.svg \
+            assets/sticker-symbol.svg \
+            assets/sticker-text.svg \
+            assets/sticker-code.svg \
+            assets/sticker-qr.svg
+          do
+            fetch_olivaw_landing_asset "$asset"
+          done
+
+          test -f public/olivaw_landing/index.html
+          test -f public/olivaw_landing/styles.css
+          test -f public/olivaw_landing/script.js
+          test -f public/olivaw_landing/assets/hero-hands.webp
+          test -f public/olivaw_landing/assets/product-ui.webp
+          test -f public/olivaw_landing/assets/final-cta.webp
+          cp public/olivaw_landing/index.html public/olivaw_landing/404.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
