@@ -18,7 +18,7 @@ env:
   # Olivaw source revision: 0ae4f115f1046d48a76afb9d40b00196ed69b65a
   SOURCE_SITE: https://pavel-pushkin-portfolio-2026.pubblegunn.chatgpt.site
   OLIVAW_SITE: https://olivaw.pubblegunn.chatgpt.site
-  # Olivaw landing source revision: b0938c439caf0063898dba655827f9b1ae0829c7
+  # Olivaw landing source revision: 8ec410c666851c889693393b02fbc23e4a034ea1
   OLIVAW_LANDING_SITE: https://olivaw-landing.pubblegunn.chatgpt.site
 
 jobs:
@@ -212,6 +212,7 @@ jobs:
             assets/integrations-lobby.webp \
             assets/product-ui.webp \
             assets/scan-robot.webp \
+            assets/scan-heading.png \
             assets/field-phone.webp \
             assets/final-cta.webp \
             assets/olivaw-wordmark.svg \
