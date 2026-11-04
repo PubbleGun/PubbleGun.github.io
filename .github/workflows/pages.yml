@@ -15,10 +15,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Olivaw source revision: 0ae4f115f1046d48a76afb9d40b00196ed69b65a
+  # Olivaw source revision: ce64d8987c7b19ce0fe556187077cd589b107cbb
   SOURCE_SITE: https://pavel-pushkin-portfolio-2026.pubblegunn.chatgpt.site
   OLIVAW_SITE: https://olivaw.pubblegunn.chatgpt.site
-  # Olivaw landing source revision: 4def8c0da240e3126c47cdc6f4bd3e836dc568c7
+  # Olivaw landing source revision: d80e85760ff6d234a3d9b4931990d71ada093ba4
   OLIVAW_LANDING_SITE: https://olivaw-landing.pubblegunn.chatgpt.site
 
 jobs:
@@ -223,6 +223,7 @@ jobs:
             assets/icon-tasks.svg \
             assets/icon-ai.svg \
             assets/status-dot.svg \
+            assets/scan-sticker-exact.svg \
             assets/sticker-symbol.svg \
             assets/sticker-text.svg \
             assets/sticker-code.svg \
